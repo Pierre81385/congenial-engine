@@ -34,7 +34,7 @@ class UserAccount: ObservableObject {
         let docRef = db.collection("users").document(self.userAccount.id)
         do {
             try docRef.setData(from: self.userAccount)
-            self.responseMessage = "Created userAccount { id: \(self.userAccount.id), email: \(self.userAccount.email), password: \(self.userAccount.password), isActive: \(self.userAccount.email) }"
+            self.responseMessage = "Created userAccount { id: \(self.userAccount.id), email: \(self.userAccount.email), password: \(self.userAccount.password), isActive: \(self.userAccount.isActive) }"
             self.responseStatus = true
         }
         catch {
@@ -50,7 +50,7 @@ class UserAccount: ObservableObject {
           switch result {
           case .success(let userAccount):
             self.userAccount = userAccount
-            self.responseMessage = "Found userAccount { id: \(self.userAccount.id), email: \(self.userAccount.email), password: \(self.userAccount.password), isActive: \(self.userAccount.email) }"
+            self.responseMessage = "Found userAccount { id: \(self.userAccount.id), email: \(self.userAccount.email), password: \(self.userAccount.password), isActive: \(self.userAccount.isActive) }"
             self.responseStatus = true
           case .failure(let error):
             self.responseMessage = "Oops! Failed to find a user account by that id! Error: \(error.localizedDescription)"
@@ -76,10 +76,10 @@ class UserAccount: ObservableObject {
     }
     
     func updateUserAccount(){
-        let docRef = db.collection("users").document(userAccount.id)
+        let docRef = db.collection("users").document(self.userAccount.id)
         do {
             try docRef.setData(from: self.userAccount)
-            self.responseMessage = "Updated userAccount { id: \(self.userAccount.id), email: \(self.userAccount.email), password: \(self.userAccount.password), isActive: \(self.userAccount.email) }"
+            self.responseMessage = "Updated userAccount { id: \(self.userAccount.id), email: \(self.userAccount.email), password: \(self.userAccount.password), isActive: \(self.userAccount.isActive) }"
             self.responseStatus = true
         }
         catch {

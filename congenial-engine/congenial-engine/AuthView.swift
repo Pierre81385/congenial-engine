@@ -9,33 +9,40 @@ import Foundation
 import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth
+import CryptoKit
 
 struct AuthView: View {
     @State var showRegistration: Bool = false
     
     var body: some View {
         ZStack {
-            VStack {
-                Toggle(isOn: $showRegistration, label: {
-                    Text("Create Account")
-                }).tint(.black)
+            
                 if(showRegistration){
-                    RegistrationView()
+                    RegistrationView(showRegistration: $showRegistration)
                 }else{
-                    LoginView()
+                    LoginView(showRegistration: $showRegistration)
                 }
-            }
+            
         }
     }
 }
 
 struct RegistrationView: View {
+    @Binding var showRegistration: Bool
     @State var email: String = ""
     @State var password: String = ""
     @State var verifyPassword: String = ""
     @State var success: Bool = false
     @ObservedObject var auth = FireAuth(authStatus: false, authErrorMessage: "")
     @ObservedObject var user = UserAccount.init(userAccount: Account(id: "", email: "", password: "", isActive: false), userAccounts: [], responseMessage: "", responseStatus: false)
+    
+    func hashPass(data: Data) -> String {
+        let digest = SHA256.hash(data: data)
+        let hashString = digest
+            .compactMap { String(format: "%02x", $0) }
+            .joined()
+        return hashString
+    }
 
     var body: some View {
         NavigationStack {
@@ -59,27 +66,49 @@ struct RegistrationView: View {
                     .autocorrectionDisabled(true)
                 Text(auth.authErrorMessage).tint(.red)
                 Text(user.responseMessage).tint(.red)
-                Button(action: {
-                    auth.CreateUser(email: email, password: password)
-                    if(Auth.auth().currentUser?.uid != nil){
-                        user.userAccount.id = Auth.auth().currentUser!.uid
-                        user.userAccount.email = email.lowercased()
-                        user.userAccount.password = password
-                        user.userAccount.isActive = false
-                        user.createUserAccount()
-                        if(auth.authStatus && user.responseStatus){
-                            success = true
+                HStack {
+                    Button(action: {
+                        showRegistration = false
+                    }, label: {
+                        Text("to LOGIN")
+                    })
+                    Button(action: {
+                        if(email != "" && password != "" && verifyPassword != ""){
+                            if(password == verifyPassword){
+                                auth.CreateUser(email: email, password: password)
+                                Auth.auth().addStateDidChangeListener { (fireAuth, fireUser) in
+                                    switch fireUser {
+                                    case .none:
+                                        print("USER NOT FOUND IN CHECK AUTH STATE")
+                                    case .some(let fireUser):
+                                        print("USER FOUND WITH ID: \(fireUser.uid)")
+                                        user.userAccount.id = fireUser.uid
+                                        user.userAccount.email = email.lowercased()
+                                        user.userAccount.password = password
+                                        user.userAccount.isActive = true
+                                        user.createUserAccount()
+                                        if(auth.authStatus && user.responseStatus){
+                                            success = true
+                                        }else{
+                                            email = ""
+                                            password = ""
+                                            verifyPassword = ""
+                                        }
+                                    }
+                                }
+                            }else{
+                                auth.authErrorMessage = "Passwords must match!"
+                            }
+                        }else{
+                            auth.authErrorMessage = "All inputs must not be empty."
                         }
-                    }else{
-                        email = ""
-                        password = ""
-                        verifyPassword = ""
-                    }
-                }, label: {
-                    Text("SUBMIT")
-                }).navigationDestination(isPresented: $user.responseStatus, destination: { SuccessView(user: user.userAccount).navigationBarBackButtonHidden(true) })
+                    }, label: {
+                        Text("SUBMIT")
+                    }).navigationDestination(isPresented: $success, destination: { SuccessView(userAccount: user.userAccount).navigationBarBackButtonHidden(true) })
+                }
             }
         }.onAppear{
+            auth.SignOut()
             email = ""
             password = ""
             verifyPassword = ""
@@ -90,6 +119,7 @@ struct RegistrationView: View {
 }
 
 struct LoginView: View {
+    @Binding var showRegistration: Bool
     @State var email: String = ""
     @State var password: String = ""
     @State var success: Bool = false
@@ -113,28 +143,46 @@ struct LoginView: View {
                     .autocorrectionDisabled(true)
                 Text(auth.authErrorMessage).tint(.red)
                 Text(user.responseMessage).tint(.red)
-                Button(action: {
-                    auth.SignInWithEmailAndPassword(email: email, password: password)
-                    if(Auth.auth().currentUser?.uid != nil){
-                        user.getUserAccount(id: Auth.auth().currentUser!.uid)
-                        if(auth.authStatus && user.responseStatus){
-                            success = true
+                HStack {
+                    Button(action: {
+                        showRegistration = true
+                    }, label: {
+                        Text("to REGISTRATION")
+                    })
+                    Button(action: {
+                        if(email != "" && password != ""){
+                            auth.SignInWithEmailAndPassword(email: email, password: password)
+                            Auth.auth().addStateDidChangeListener { (fireAuth, fireUser) in
+                                switch fireUser {
+                                case .none:
+                                    print("USER NOT FOUND IN CHECK AUTH STATE")
+                                case .some(let fireUser):
+                                    print("USER FOUND WITH ID: \(fireUser.uid)")
+                                    user.getUserAccount(id: Auth.auth().currentUser!.uid)
+                                    user.userAccount.isActive = true
+                                    success = true
+                                }
+                            }
+                        }else{
+                            auth.authErrorMessage = "All inputs must not be empty."
                         }
-                    }else{
-                        email = ""
-                        password = ""
-                    }
-                    
-                }, label: {
-                    Text("SUBMIT")
-                }).navigationDestination(isPresented: $success, destination: { SuccessView(user: user.userAccount).navigationBarBackButtonHidden(true) })
+                    }, label: {
+                        Text("SUBMIT")
+                    }).navigationDestination(isPresented: $success, destination: { SuccessView(userAccount: user.userAccount).navigationBarBackButtonHidden(true) })
+                }
             }
+        }.onAppear{
+            auth.SignOut()
+            email = ""
+            password = ""
+            auth.authErrorMessage = ""
+            user.responseMessage = ""
         }
     }
 }
 
 struct SuccessView: View {
-    var user: Account?
+    var userAccount: Account?
     @State var logout: Bool = false
     @ObservedObject var auth = FireAuth(authStatus: false, authErrorMessage: "")
     
@@ -142,13 +190,13 @@ struct SuccessView: View {
         NavigationStack{
             VStack{
                 Text("SUCCESS").font(.largeTitle)
-                Text(user?.email ?? "Welcome")
+                Text(userAccount?.email ?? "Welcome")
                 Button(action: {
                     auth.SignOut()
                     logout = true
                 }, label: {
                     Text("Logout")
-                }).navigationDestination(isPresented: $logout, destination: { AuthView() })
+                }).navigationDestination(isPresented: $logout, destination: { AuthView().navigationBarBackButtonHidden(true) })
             }
         }
     }
