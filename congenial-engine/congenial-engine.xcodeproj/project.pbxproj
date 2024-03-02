@@ -41,7 +41,7 @@
 		BA740C632B92A9D000179C50 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = BA740C622B92A9D000179C50 /* FirebaseStorageCombine-Community */; };
 		BA740C652B92B03900179C50 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA740C642B92B03900179C50 /* AuthView.swift */; };
 		BA740C672B92B0AA00179C50 /* AuthModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA740C662B92B0AA00179C50 /* AuthModel.swift */; };
-		BA740C692B92C02C00179C50 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BA740C682B92C02C00179C50 /* GoogleService-Info.plist */; };
+		BA740C6B2B92C79C00179C50 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BA740C6A2B92C79C00179C50 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,7 +53,7 @@
 		BA740C2B2B92A91800179C50 /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
 		BA740C642B92B03900179C50 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		BA740C662B92B0AA00179C50 /* AuthModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthModel.swift; sourceTree = "<group>"; };
-		BA740C682B92C02C00179C50 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BA740C6A2B92C79C00179C50 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,7 +113,7 @@
 		BA740C1C2B92A90600179C50 /* congenial-engine */ = {
 			isa = PBXGroup;
 			children = (
-				BA740C682B92C02C00179C50 /* GoogleService-Info.plist */,
+				BA740C6A2B92C79C00179C50 /* GoogleService-Info.plist */,
 				BA740C1D2B92A90600179C50 /* congenial_engineApp.swift */,
 				BA740C1F2B92A90600179C50 /* ContentView.swift */,
 				BA740C2B2B92A91800179C50 /* UserModel.swift */,
@@ -225,7 +225,7 @@
 			files = (
 				BA740C252B92A90700179C50 /* Preview Assets.xcassets in Resources */,
 				BA740C222B92A90700179C50 /* Assets.xcassets in Resources */,
-				BA740C692B92C02C00179C50 /* GoogleService-Info.plist in Resources */,
+				BA740C6B2B92C79C00179C50 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
