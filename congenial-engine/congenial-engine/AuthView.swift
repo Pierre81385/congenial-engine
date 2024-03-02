@@ -33,6 +33,7 @@ struct RegistrationView: View {
     @State var password: String = ""
     @State var verifyPassword: String = ""
     @State var success: Bool = false
+    @State var currentUserAccount: Account?
     @ObservedObject var auth = FireAuth(authStatus: false, authErrorMessage: "")
     @ObservedObject var user = UserAccount.init(userAccount: Account(id: "", email: "", password: "", isActive: false), userAccounts: [], responseMessage: "", responseStatus: false)
     
@@ -87,6 +88,7 @@ struct RegistrationView: View {
                                         user.userAccount.password = password
                                         user.userAccount.isActive = true
                                         user.createUserAccount()
+                                        currentUserAccount = user.userAccount
                                         if(auth.authStatus && user.responseStatus){
                                             success = true
                                         }else{
@@ -104,7 +106,7 @@ struct RegistrationView: View {
                         }
                     }, label: {
                         Text("SUBMIT")
-                    }).navigationDestination(isPresented: $success, destination: { SuccessView(userAccount: user.userAccount).navigationBarBackButtonHidden(true) })
+                    }).navigationDestination(isPresented: $success, destination: { SuccessView(currentUserAccount: currentUserAccount).navigationBarBackButtonHidden(true) })
                 }
             }
         }.onAppear{
@@ -123,6 +125,7 @@ struct LoginView: View {
     @State var email: String = ""
     @State var password: String = ""
     @State var success: Bool = false
+    @State var currentUserAccount: Account?
     @ObservedObject var auth = FireAuth(authStatus: false, authErrorMessage: "")
     @ObservedObject var user = UserAccount.init(userAccount: Account(id: "", email: "", password: "", isActive: false), userAccounts: [], responseMessage: "", responseStatus: false)
     
@@ -159,7 +162,7 @@ struct LoginView: View {
                                 case .some(let fireUser):
                                     print("USER FOUND WITH ID: \(fireUser.uid)")
                                     user.getUserAccount(id: Auth.auth().currentUser!.uid)
-                                    user.userAccount.isActive = true
+                                    currentUserAccount = user.userAccount
                                     success = true
                                 }
                             }
@@ -168,7 +171,7 @@ struct LoginView: View {
                         }
                     }, label: {
                         Text("SUBMIT")
-                    }).navigationDestination(isPresented: $success, destination: { SuccessView(userAccount: user.userAccount).navigationBarBackButtonHidden(true) })
+                    }).navigationDestination(isPresented: $success, destination: { SuccessView(currentUserAccount: currentUserAccount).navigationBarBackButtonHidden(true) })
                 }
             }
         }.onAppear{
@@ -182,7 +185,7 @@ struct LoginView: View {
 }
 
 struct SuccessView: View {
-    var userAccount: Account?
+    @State var currentUserAccount: Account?
     @State var logout: Bool = false
     @ObservedObject var auth = FireAuth(authStatus: false, authErrorMessage: "")
     
@@ -190,14 +193,18 @@ struct SuccessView: View {
         NavigationStack{
             VStack{
                 Text("SUCCESS").font(.largeTitle)
-                Text(userAccount?.email ?? "Welcome")
+                Text(currentUserAccount?.email ?? "Welcome")
+                Text("ONLINE: \(String(describing: currentUserAccount?.isActive))")
                 Button(action: {
+                    currentUserAccount?.isActive = false
                     auth.SignOut()
                     logout = true
                 }, label: {
                     Text("Logout")
                 }).navigationDestination(isPresented: $logout, destination: { AuthView().navigationBarBackButtonHidden(true) })
             }
+        }.onAppear{
+            currentUserAccount?.isActive = true
         }
     }
 }
