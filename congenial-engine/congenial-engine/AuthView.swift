@@ -29,13 +29,13 @@ struct AuthView: View {
 
 struct RegistrationView: View {
     @Binding var showRegistration: Bool
+    @State var displayName: String = ""
     @State var email: String = ""
     @State var password: String = ""
     @State var verifyPassword: String = ""
     @State var success: Bool = false
-    @State var currentUserAccount: Account?
     @ObservedObject var auth = FireAuth(authStatus: false, authErrorMessage: "")
-    @ObservedObject var user = UserAccount.init(userAccount: Account(id: "", email: "", password: "", isActive: false), userAccounts: [], responseMessage: "", responseStatus: false)
+    @ObservedObject var user = UserAccount.init(userAccount: Account(id: "", displayName: "", email: "", password: "", isActive: false), userAccounts: [], responseMessage: "", responseStatus: false)
     
     func hashPass(data: Data) -> String {
         let digest = SHA256.hash(data: data)
@@ -50,6 +50,11 @@ struct RegistrationView: View {
             VStack {
                 Text("REGISTER")
                     .font(.largeTitle)
+                TextField("display name", text: $displayName)
+                    .accentColor(.black)
+                    .padding()
+                    .autocapitalization(.none)
+                    .autocorrectionDisabled(true)
                 TextField("email address", text: $email)
                     .accentColor(.black)
                     .padding()
@@ -74,7 +79,7 @@ struct RegistrationView: View {
                         Text("to LOGIN")
                     })
                     Button(action: {
-                        if(email != "" && password != "" && verifyPassword != ""){
+                        if(displayName != "" && email != "" && password != "" && verifyPassword != ""){
                             if(password == verifyPassword){
                                 auth.CreateUser(email: email, password: password)
                                 Auth.auth().addStateDidChangeListener { (fireAuth, fireUser) in
@@ -84,14 +89,15 @@ struct RegistrationView: View {
                                     case .some(let fireUser):
                                         print("USER FOUND WITH ID: \(fireUser.uid)")
                                         user.userAccount.id = fireUser.uid
+                                        user.userAccount.displayName = displayName
                                         user.userAccount.email = email.lowercased()
                                         user.userAccount.password = password
                                         user.userAccount.isActive = true
                                         user.createUserAccount()
-                                        currentUserAccount = user.userAccount
                                         if(auth.authStatus && user.responseStatus){
                                             success = true
                                         }else{
+                                            displayName = ""
                                             email = ""
                                             password = ""
                                             verifyPassword = ""
@@ -106,11 +112,12 @@ struct RegistrationView: View {
                         }
                     }, label: {
                         Text("SUBMIT")
-                    }).navigationDestination(isPresented: $success, destination: { SuccessView(currentUserAccount: currentUserAccount).navigationBarBackButtonHidden(true) })
+                    }).navigationDestination(isPresented: $success, destination: { SuccessView(currentUserAccount: user.userAccount).navigationBarBackButtonHidden(true) })
                 }
             }
         }.onAppear{
             auth.SignOut()
+            displayName = ""
             email = ""
             password = ""
             verifyPassword = ""
@@ -125,9 +132,8 @@ struct LoginView: View {
     @State var email: String = ""
     @State var password: String = ""
     @State var success: Bool = false
-    @State var currentUserAccount: Account?
     @ObservedObject var auth = FireAuth(authStatus: false, authErrorMessage: "")
-    @ObservedObject var user = UserAccount.init(userAccount: Account(id: "", email: "", password: "", isActive: false), userAccounts: [], responseMessage: "", responseStatus: false)
+    @ObservedObject var user = UserAccount.init(userAccount: Account(id: "", displayName: "", email: "", password: "", isActive: false), userAccounts: [], responseMessage: "", responseStatus: false)
     
     var body: some View {
         NavigationStack {
@@ -161,8 +167,7 @@ struct LoginView: View {
                                     print("USER NOT FOUND IN CHECK AUTH STATE")
                                 case .some(let fireUser):
                                     print("USER FOUND WITH ID: \(fireUser.uid)")
-                                    user.getUserAccount(id: Auth.auth().currentUser!.uid)
-                                    currentUserAccount = user.userAccount
+                                    user.getUserAccount(id: fireUser.uid)
                                     success = true
                                 }
                             }
@@ -171,43 +176,73 @@ struct LoginView: View {
                         }
                     }, label: {
                         Text("SUBMIT")
-                    }).navigationDestination(isPresented: $success, destination: { SuccessView(currentUserAccount: currentUserAccount).navigationBarBackButtonHidden(true) })
+                    }).navigationDestination(isPresented: $success, destination: { SuccessView(currentUserAccount: user.userAccount).navigationBarBackButtonHidden(true)
+                    })
+                    
                 }
+                
+                
+            }.onAppear{
+                auth.SignOut()
+                email = ""
+                password = ""
+                auth.authErrorMessage = ""
+                user.responseMessage = ""
             }
-        }.onAppear{
-            auth.SignOut()
-            email = ""
-            password = ""
-            auth.authErrorMessage = ""
-            user.responseMessage = ""
         }
     }
 }
 
 struct SuccessView: View {
-    @State var currentUserAccount: Account?
+    //confirm user selections before entry to the main app
+    //select online/not online
+    //confirm location services?
+    //confirm photo gallery access?
+    var currentUserAccount: Account
+    @State var appearOnline: Bool = false
+    @State var confirm: Bool = false
     @State var logout: Bool = false
     @ObservedObject var auth = FireAuth(authStatus: false, authErrorMessage: "")
-    
+    @ObservedObject var user = UserAccount.init(userAccount: Account(id: "", displayName: "", email: "", password: "", isActive: false), userAccounts: [], responseMessage: "", responseStatus: false)
     var body: some View {
         NavigationStack{
             VStack{
-                Text("SUCCESS").font(.largeTitle)
-                Text(currentUserAccount?.email ?? "Welcome")
-                Text("ONLINE: \(String(describing: currentUserAccount?.isActive))")
+                    Text("SUCCESS").font(.largeTitle)
+                Text("Welcome \(currentUserAccount.displayName)")
+                    Text(currentUserAccount.id)
+                    Text(currentUserAccount.email)
+                    
+                }
+            Toggle(isOn: $appearOnline, label: {
+                Text("Appear online?")
+            }).tint(.black)
+            HStack{
                 Button(action: {
-                    currentUserAccount?.isActive = false
+                    user.userAccount = currentUserAccount
+                    user.userAccount.isActive = false
+                    Task {
+                        await user.updateUserAccountById(id: currentUserAccount.id)
+                    }
                     auth.SignOut()
                     logout = true
                 }, label: {
-                    Text("Logout")
+                    Text("LOGOUT")
                 }).navigationDestination(isPresented: $logout, destination: { AuthView().navigationBarBackButtonHidden(true) })
+                Button(action: {
+                    user.userAccount = currentUserAccount
+                    user.userAccount.isActive = appearOnline
+                    Task {
+                        await user.updateUserAccountById(id: currentUserAccount.id)
+                    }
+                    confirm = true
+                }, label: {
+                    Text("CONFIRM")
+                }).navigationDestination(isPresented: $confirm, destination: { MainMenuView(currentUserAccount: user.userAccount).navigationBarBackButtonHidden(true) })
             }
-        }.onAppear{
-            currentUserAccount?.isActive = true
         }
     }
-}
+    }
+
 
 #Preview {
     AuthView()

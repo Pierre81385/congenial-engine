@@ -10,6 +10,7 @@ import FirebaseFirestore
 
 struct Account: Codable, Identifiable, Equatable {
     var id: String
+    var displayName: String
     var email: String
     var password: String
     var isActive: Bool
@@ -75,10 +76,34 @@ class UserAccount: ObservableObject {
             }
     }
     
-    func updateUserAccount(){
+    func updateUserAccount() async {
         let docRef = db.collection("users").document(self.userAccount.id)
         do {
-            try docRef.setData(from: self.userAccount)
+            try await docRef.updateData([
+                "id": self.userAccount.id,
+                "email": self.userAccount.email,
+                "password": self.userAccount.password,
+                "isActive": self.userAccount.isActive
+            ])
+            self.responseMessage = "Updated userAccount { id: \(self.userAccount.id), email: \(self.userAccount.email), password: \(self.userAccount.password), isActive: \(self.userAccount.isActive) }"
+            self.responseStatus = true
+        }
+        catch {
+            self.responseMessage = "Error updating userAccount! Error: \(error.localizedDescription)"
+            self.responseStatus = true
+        }
+        
+    }
+    
+    func updateUserAccountById(id: String) async {
+        let docRef = db.collection("users").document(id)
+        do {
+            try await docRef.updateData([
+                "id": self.userAccount.id,
+                "email": self.userAccount.email,
+                "password": self.userAccount.password,
+                "isActive": self.userAccount.isActive
+            ])
             self.responseMessage = "Updated userAccount { id: \(self.userAccount.id), email: \(self.userAccount.email), password: \(self.userAccount.password), isActive: \(self.userAccount.isActive) }"
             self.responseStatus = true
         }
@@ -90,7 +115,21 @@ class UserAccount: ObservableObject {
     }
     
     func deleteUserAccount() async {
-        let docRef = db.collection("users").document(self.userAccount.id)
+        let docRef = db.collection("users").document()
+        
+        do {
+          try await docRef.delete()
+            self.responseMessage = "User account deleted!"
+            self.responseStatus = true
+          print("Document successfully removed!")
+        } catch {
+            self.responseMessage = "Oops! Failed delete userAccount! Error: \(error.localizedDescription)"
+            self.responseStatus = false
+        }
+    }
+    
+    func deleteUserAccountById(id: String) async {
+        let docRef = db.collection("users").document(id)
         
         do {
           try await docRef.delete()

@@ -42,6 +42,8 @@
 		BA740C652B92B03900179C50 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA740C642B92B03900179C50 /* AuthView.swift */; };
 		BA740C672B92B0AA00179C50 /* AuthModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA740C662B92B0AA00179C50 /* AuthModel.swift */; };
 		BA740C6B2B92C79C00179C50 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BA740C6A2B92C79C00179C50 /* GoogleService-Info.plist */; };
+		BA740C6D2B958E9B00179C50 /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA740C6C2B958E9B00179C50 /* MainMenuView.swift */; };
+		BA740C742B95A3CC00179C50 /* MessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA740C732B95A3CC00179C50 /* MessageModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +56,8 @@
 		BA740C642B92B03900179C50 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
 		BA740C662B92B0AA00179C50 /* AuthModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthModel.swift; sourceTree = "<group>"; };
 		BA740C6A2B92C79C00179C50 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
+		BA740C6C2B958E9B00179C50 /* MainMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
+		BA740C732B95A3CC00179C50 /* MessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +122,8 @@
 				BA740C1F2B92A90600179C50 /* ContentView.swift */,
 				BA740C2B2B92A91800179C50 /* UserModel.swift */,
 				BA740C642B92B03900179C50 /* AuthView.swift */,
+				BA740C6C2B958E9B00179C50 /* MainMenuView.swift */,
+				BA740C6E2B95A38100179C50 /* Chat */,
 				BA740C662B92B0AA00179C50 /* AuthModel.swift */,
 				BA740C212B92A90700179C50 /* Assets.xcassets */,
 				BA740C232B92A90700179C50 /* Preview Content */,
@@ -131,6 +137,14 @@
 				BA740C242B92A90700179C50 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		BA740C6E2B95A38100179C50 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				BA740C732B95A3CC00179C50 /* MessageModel.swift */,
+			);
+			path = Chat;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -236,10 +250,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA740C6D2B958E9B00179C50 /* MainMenuView.swift in Sources */,
 				BA740C202B92A90600179C50 /* ContentView.swift in Sources */,
 				BA740C2C2B92A91800179C50 /* UserModel.swift in Sources */,
 				BA740C652B92B03900179C50 /* AuthView.swift in Sources */,
 				BA740C1E2B92A90600179C50 /* congenial_engineApp.swift in Sources */,
+				BA740C742B95A3CC00179C50 /* MessageModel.swift in Sources */,
 				BA740C672B92B0AA00179C50 /* AuthModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
