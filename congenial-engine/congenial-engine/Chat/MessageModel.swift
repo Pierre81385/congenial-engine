@@ -10,7 +10,7 @@ import FirebaseFirestore
 
 //the message sent by a user
 struct Message: Codable, Identifiable, Equatable {
-    var id: String //set as timestamp toString on creation
+    var id: Int
     var content: String
     var sender: Account
     var attachment: String
@@ -18,7 +18,7 @@ struct Message: Codable, Identifiable, Equatable {
 
 //the container for the messages sent back and forth
 struct MessageCollection: Codable, Identifiable, Equatable {
-    var id: String //set as timestamp toString on creation
+    var id: String
     var users: [Account]
     var messages: [Message]
     var isPrivate: Bool
@@ -45,7 +45,7 @@ class ChatMessage: ObservableObject {
     }
     
     func createMessageCollection() {
-        let docRef = db.collection("chat").document(self.messageCollection.id)
+        let docRef = db.collection("chat").document(String(describing: self.messageCollection.id))
         do {
             try docRef.setData(from: self.messageCollection)
             self.responseMessage = "message collection created!"
@@ -56,8 +56,24 @@ class ChatMessage: ObservableObject {
         }
     }
     
-    func addMessageCollectionUser(id: String, user: Account) {
+    func confirmMessageCollectionById(id: String) async {
         let docRef = db.collection("chat").document(id)
+        do {
+          let document = try await docRef.getDocument()
+          if document.exists {
+              self.responseMessage = "Collection exists!"
+              self.responseStatus = true
+          } else {
+              createMessageCollection()
+          }
+        } catch {
+            self.responseMessage = "Error: \(error.localizedDescription)"
+            self.responseStatus = false
+        }
+    }
+    
+    func addMessageCollectionUser(user: Account) {
+        let docRef = db.collection("chat").document(String(describing: self.messageCollection.id))
         
         docRef.updateData([
             "users": FieldValue.arrayUnion([user])
@@ -67,8 +83,8 @@ class ChatMessage: ObservableObject {
         
     }
     
-    func removeMessageCollectionUser(id: String, user: Account) {
-        let docRef = db.collection("chat").document(id)
+    func removeMessageCollectionUser(user: Account) {
+        let docRef = db.collection("chat").document(String(describing: self.messageCollection.id))
         
         docRef.updateData([
             "users": FieldValue.arrayRemove([user])
@@ -77,8 +93,8 @@ class ChatMessage: ObservableObject {
         self.responseStatus = true
     }
     
-    func createMessage(id: String, message: ChatMessage) {
-        let docRef = db.collection("chat").document(id)
+    func createMessage(message: ChatMessage) {
+        let docRef = db.collection("chat").document(String(describing: self.messageCollection.id))
         
             docRef.updateData([
                 "messages": FieldValue.arrayUnion([message])

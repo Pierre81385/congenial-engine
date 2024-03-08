@@ -36,7 +36,7 @@ struct MainMenuView: View {
                     Text("ONLINE: \(String(describing: currentUserAccount.isActive))")
                 }
                 Spacer()
-                NavigationLink(destination: { Text("Chat View") }, label: { Text("Chat") })
+                NavigationLink(destination: { ChatView(currentUserAccount: currentUserAccount) }, label: { Text("Chat") })
                 NavigationLink(destination: { Text("Menu View") }, label: { Text("Menu") })
                 NavigationLink(destination: { Text("Orders View") }, label: { Text("Orders") })
                 NavigationLink(destination: { Text("Map View") }, label: { Text("Map") })

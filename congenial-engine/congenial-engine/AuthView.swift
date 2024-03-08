@@ -76,7 +76,7 @@ struct RegistrationView: View {
                     Button(action: {
                         showRegistration = false
                     }, label: {
-                        Text("to LOGIN")
+                        Text("LOGIN")
                     })
                     Button(action: {
                         if(displayName != "" && email != "" && password != "" && verifyPassword != ""){
@@ -156,7 +156,7 @@ struct LoginView: View {
                     Button(action: {
                         showRegistration = true
                     }, label: {
-                        Text("to REGISTRATION")
+                        Text("REGISTRATION")
                     })
                     Button(action: {
                         if(email != "" && password != ""){
