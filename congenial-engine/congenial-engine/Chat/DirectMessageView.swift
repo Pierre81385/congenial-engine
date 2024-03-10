@@ -20,6 +20,7 @@ struct DirectMessageView: View {
                 HStack {
                     Text("DM with \(currentUserAccount.displayName) and \(directUserAccount.displayName)")
                 }
+                MessageFeedView(currenUserAccount: currentUserAccount, messages: <#T##[Message]#>)
             }
         }.onAppear{
             let users = [currentUserAccount, directUserAccount]

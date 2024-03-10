@@ -47,6 +47,7 @@
 		BA740C762B99551F00179C50 /* DirectMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA740C752B99551F00179C50 /* DirectMessageView.swift */; };
 		BA740C7E2B99562C00179C50 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA740C7D2B99562C00179C50 /* ChatView.swift */; };
 		BA7B92502B9AE58800576788 /* Base64.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7B924F2B9AE58800576788 /* Base64.swift */; };
+		BA7B92522B9D68A700576788 /* MessageFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA7B92512B9D68A700576788 /* MessageFeedView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,6 +65,7 @@
 		BA740C752B99551F00179C50 /* DirectMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectMessageView.swift; sourceTree = "<group>"; };
 		BA740C7D2B99562C00179C50 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		BA7B924F2B9AE58800576788 /* Base64.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base64.swift; sourceTree = "<group>"; };
+		BA7B92512B9D68A700576788 /* MessageFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageFeedView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,6 +152,7 @@
 			isa = PBXGroup;
 			children = (
 				BA740C752B99551F00179C50 /* DirectMessageView.swift */,
+				BA7B92512B9D68A700576788 /* MessageFeedView.swift */,
 				BA740C732B95A3CC00179C50 /* MessageModel.swift */,
 				BA740C7D2B99562C00179C50 /* ChatView.swift */,
 			);
@@ -271,6 +274,7 @@
 				BA740C202B92A90600179C50 /* ContentView.swift in Sources */,
 				BA740C2C2B92A91800179C50 /* UserModel.swift in Sources */,
 				BA740C652B92B03900179C50 /* AuthView.swift in Sources */,
+				BA7B92522B9D68A700576788 /* MessageFeedView.swift in Sources */,
 				BA740C7E2B99562C00179C50 /* ChatView.swift in Sources */,
 				BA740C762B99551F00179C50 /* DirectMessageView.swift in Sources */,
 				BA740C1E2B92A90600179C50 /* congenial_engineApp.swift in Sources */,
